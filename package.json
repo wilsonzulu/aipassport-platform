@@ -1,0 +1,22 @@
+{
+  "name": "aipassport-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.10",
+    "@tanstack/react-query": "^5.90.21",
+    "next": "14.2.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "viem": "^2.46.3",
+    "wagmi": "^2.19.5"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14"
+  }
+}
