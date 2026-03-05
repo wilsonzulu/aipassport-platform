@@ -11,6 +11,7 @@ import {
   useSwitchChain,
   useWriteContract,
 } from "wagmi";
+import { polygonAmoy } from "wagmi/chains";
 import {
   AMOY_CHAIN_ID,
   DIAMOND,
@@ -436,6 +437,8 @@ export default function Home() {
     const big = needAmount * 100n;
     await runTx(`Approve ${MOCK_USDT_SYMBOL}`, () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: MOCK_USDT,
         abi: ERC20_ABI,
         functionName: "approve",
@@ -449,27 +452,27 @@ export default function Home() {
   async function mintBasic() {
     await approveIfNeeded(basicPrice);
     await runTx("Mint BASIC", () =>
-      writeContractAsync({ address: DIAMOND, abi: CORE_ABI, functionName: "mintBasic", args: [] })
+      writeContractAsync({ account: address!, chain: polygonAmoy,  address: DIAMOND, abi: CORE_ABI, functionName: "mintBasic", args: [] })
     );
   }
 
   async function buyPro() {
     await approveIfNeeded(proTotal);
     await runTx("Buy PRO", () =>
-      writeContractAsync({ address: DIAMOND, abi: CORE_ABI, functionName: "buyPro", args: [BigInt(proDays)] })
+      writeContractAsync({ account: address!, chain: polygonAmoy,  address: DIAMOND, abi: CORE_ABI, functionName: "buyPro", args: [BigInt(proDays)] })
     );
   }
 
   async function buyElite() {
     await approveIfNeeded(eliteTotal);
     await runTx("Buy ELITE", () =>
-      writeContractAsync({ address: DIAMOND, abi: CORE_ABI, functionName: "buyElite", args: [BigInt(eliteDays)] })
+      writeContractAsync({ account: address!, chain: polygonAmoy,  address: DIAMOND, abi: CORE_ABI, functionName: "buyElite", args: [BigInt(eliteDays)] })
     );
   }
 
   async function claimRewards() {
     await runTx("Claim rewards", () =>
-      writeContractAsync({ address: DIAMOND, abi: REWARDS_ABI, functionName: "claimRewards", args: [BigInt(tokenId)] })
+      writeContractAsync({ account: address!, chain: polygonAmoy,  address: DIAMOND, abi: REWARDS_ABI, functionName: "claimRewards", args: [BigInt(tokenId)] })
     );
   }
 
@@ -478,6 +481,8 @@ export default function Home() {
     await approveIfNeeded(amt);
     await runTx("Request loan", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: LOAN_ABI,
         functionName: "requestLoan",
@@ -488,13 +493,15 @@ export default function Home() {
 
   async function repayLoan() {
     await runTx("Repay loan", () =>
-      writeContractAsync({ address: DIAMOND, abi: LOAN_ABI, functionName: "repayLoan", args: [BigInt(tokenId)] })
+      writeContractAsync({ account: address!, chain: polygonAmoy,  address: DIAMOND, abi: LOAN_ABI, functionName: "repayLoan", args: [BigInt(tokenId)] })
     );
   }
 
   async function autoExtend() {
     await runTx("AutoExtend", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: AUTO_EXTEND_ABI,
         functionName: "autoExtendPrivilege",
@@ -507,6 +514,8 @@ export default function Home() {
     const seconds = BigInt(lockDays) * 86400n;
     await runTx("Lock reputation", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: REPUTATION_LOCK_ABI,
         functionName: "lockReputation",
@@ -518,6 +527,8 @@ export default function Home() {
   async function unlockReputation() {
     await runTx("Unlock reputation", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: REPUTATION_LOCK_ABI,
         functionName: "unlockReputation",
@@ -531,6 +542,8 @@ export default function Home() {
     const price = parseUnits(String(rentPriceUsdt), dec);
     await runTx("Create rent offer", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: RENTALS_ABI,
         functionName: "createPassportRentOffer",
@@ -542,6 +555,8 @@ export default function Home() {
   async function cancelOffer() {
     await runTx("Cancel rent offer", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: RENTALS_ABI,
         functionName: "cancelPassportRentOffer",
@@ -556,6 +571,8 @@ export default function Home() {
     await approveIfNeeded(livePrice);
     await runTx("Accept rent offer", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: RENTALS_ABI,
         functionName: "acceptPassportRentOffer",
@@ -567,6 +584,8 @@ export default function Home() {
   async function clearExpiredOffer() {
     await runTx("Clear expired rent", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: RENTALS_ABI,
         functionName: "clearExpiredPassportRent",
@@ -578,6 +597,8 @@ export default function Home() {
   async function revokeEarly() {
     await runTx("Revoke early", () =>
       writeContractAsync({
+        account: address!,
+        chain: polygonAmoy,
         address: DIAMOND,
         abi: RENTALS_ABI,
         functionName: "revokePassportRentEarly",
