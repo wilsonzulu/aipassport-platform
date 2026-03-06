@@ -8,7 +8,8 @@ import { polygonAmoy } from "wagmi/chains";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
-const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID || "";
+const wcProjectId =
+  process.env.NEXT_PUBLIC_WC_PROJECT_ID || "fccd3aa241cc4f67f943df31e454a170";
 
 const config = getDefaultConfig({
   appName: "AI Meta Passport",

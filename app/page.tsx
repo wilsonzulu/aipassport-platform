@@ -239,9 +239,18 @@ export default function Home() {
     let cancelled = false;
 
     async function detect() {
-      if (!address || !isAmoy || !publicClient) return;
+      if (!address || !isAmoy || !publicClient) {
+        if (!cancelled) {
+          setTokenId(0);
+          setTokenStatus("Connect wallet on Polygon Amoy.");
+        }
+        return;
+      }
 
-      setTokenStatus("Detecting your passport tokenId…");
+      if (!cancelled) {
+        setTokenId(0);
+        setTokenStatus("Detecting your passport tokenId…");
+      }
 
       for (let i = 1; i <= 100; i++) {
         try {
@@ -260,7 +269,10 @@ export default function Home() {
         } catch {}
       }
 
-      if (!cancelled) setTokenStatus("No passport token found for this wallet yet.");
+      if (!cancelled) {
+        setTokenId(0);
+        setTokenStatus("No passport token found for this wallet yet.");
+      }
     }
 
     detect();
@@ -306,7 +318,8 @@ export default function Home() {
     abi: REWARDS_ABI,
     functionName: "pendingRewardsOf",
     args: [BigInt(tokenId)],
-    query: { enabled: true },
+    scopeKey: `pendingRewards-${tokenId}-${lastTx}`,
+    query: { enabled: tokenId > 0, gcTime: 0, staleTime: 0 },
   });
 
   const isValid = useReadContract({
@@ -314,7 +327,8 @@ export default function Home() {
     abi: PASSPORT_VIEW_ABI,
     functionName: "isValid",
     args: [BigInt(tokenId)],
-    query: { enabled: true },
+    scopeKey: `isValid-${tokenId}-${lastTx}`,
+    query: { enabled: tokenId > 0, gcTime: 0, staleTime: 0 },
   });
 
   const passportScore = useReadContract({
@@ -322,7 +336,8 @@ export default function Home() {
     abi: PASSPORT_VIEW_ABI,
     functionName: "passportScore",
     args: [BigInt(tokenId)],
-    query: { enabled: true },
+    scopeKey: `passportScore-${tokenId}-${lastTx}`,
+    query: { enabled: tokenId > 0, gcTime: 0, staleTime: 0 },
   });
 
   const passportRaw = useReadContract({
@@ -330,7 +345,8 @@ export default function Home() {
     abi: PASSPORT_VIEW_ABI,
     functionName: "getPassport",
     args: [BigInt(tokenId)],
-    query: { enabled: true },
+    scopeKey: `passportRaw-${tokenId}-${lastTx}`,
+    query: { enabled: tokenId > 0, gcTime: 0, staleTime: 0 },
   });
 
   // ✅ FIXED: supports BOTH tuple-as-array and tuple-as-object
@@ -350,10 +366,11 @@ export default function Home() {
 
     // In your live output, proExpiry is being shown under "proExpiry" (not "reserved0")
     // but we safely fallback if structure changes.
-    const proExpiryRaw = (isArray ? p[7] : (p.proExpiry ?? p.reserved0)) ?? 0;
-    const eliteExpiryRaw = (isArray ? p[8] : p.eliteExpiry) ?? 0;
+    const proExpiryCandidateA = isArray ? (p[7] ?? 0) : (p.reserved0 ?? 0);
+    const proExpiryCandidateB = isArray ? (p[11] ?? 0) : (p.proExpiry ?? 0);
+    const eliteExpiryRaw = isArray ? (p[8] ?? 0) : (p.eliteExpiry ?? 0);
 
-    const proExpiry = Number(proExpiryRaw);
+    const proExpiry = Math.max(Number(proExpiryCandidateA ?? 0), Number(proExpiryCandidateB ?? 0));
     const eliteExpiry = Number(eliteExpiryRaw);
 
     const hasPro = proExpiry > now;
@@ -395,7 +412,8 @@ export default function Home() {
     abi: REPUTATION_LOCK_ABI,
     functionName: "getReputationLock",
     args: [BigInt(tokenId)],
-    query: { enabled: true },
+    scopeKey: `repLock-${tokenId}-${lastTx}`,
+    query: { enabled: tokenId > 0, gcTime: 0, staleTime: 0 },
   });
 
   // ✅ Rental marketplace reads (minimal)
@@ -423,6 +441,7 @@ export default function Home() {
       setLastTx(hash);
       setActionStatus(`${label}: submitted. Waiting confirmation…`);
       if (publicClient) await publicClient.waitForTransactionReceipt({ hash });
+      setLastTx(`${hash}-${Date.now()}`);
       setActionStatus(`${label}: ✅ success`);
       return hash;
     } catch (e: any) {
@@ -716,7 +735,7 @@ export default function Home() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
                   <Label>tokenId</Label>
-                  <div style={{ marginTop: 6, color: "white", fontWeight: 950 }}>{tokenId}</div>
+                  <div style={{ marginTop: 6, color: "white", fontWeight: 950 }}>{tokenId > 0 ? tokenId : "-"}</div>
                 </div>
                 <div>
                   <Label>isValid</Label>
