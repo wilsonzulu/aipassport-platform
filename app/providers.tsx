@@ -1,20 +1,32 @@
 "use client";
 
 import * as React from "react";
-import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider, getDefaultConfig, darkTheme } from "@rainbow-me/rainbowkit";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import { polygonAmoy } from "wagmi/chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  RainbowKitProvider,
+  getDefaultWallets,
+  darkTheme,
+} from "@rainbow-me/rainbowkit";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
-const wcProjectId =
+const projectId =
   process.env.NEXT_PUBLIC_WC_PROJECT_ID || "fccd3aa241cc4f67f943df31e454a170";
 
-const config = getDefaultConfig({
+const { connectors } = getDefaultWallets({
   appName: "AI Meta Passport",
-  projectId: wcProjectId,
+  projectId,
   chains: [polygonAmoy],
+});
+
+const config = createConfig({
+  connectors,
+  chains: [polygonAmoy],
+  transports: {
+    [polygonAmoy.id]: http(),
+  },
   ssr: false,
 });
 
