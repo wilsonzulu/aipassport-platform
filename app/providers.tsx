@@ -18,7 +18,6 @@ const projectId =
 const { connectors } = getDefaultWallets({
   appName: "AI Meta Passport",
   projectId,
-  chains: [polygonAmoy],
 });
 
 const config = createConfig({
